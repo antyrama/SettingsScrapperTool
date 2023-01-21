@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<AssemblyName>dotnet-app-service</AssemblyName>
+		<AssemblyName>settings-scrapper</AssemblyName>
 		<Description>Azure AppService configuration file generator Command Line Tools</Description>
 		<OutputType>Exe</OutputType>
 		<PackAsTool>true</PackAsTool>
-		<PackageId>Microsoft.Extensions.Configuration.AppService.Cli</PackageId>
+		<PackageId>SettingsScrapper.Cli</PackageId>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ToolCommandName>app-service-config</ToolCommandName>
 		<SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Microsoft.Extensions.Configuration.AppService.Core\Microsoft.Extensions.Configuration.AppService.Core.csproj" />
+	  <ProjectReference Include="..\SettingsScrapper.Core\SettingsScrapper.Core.csproj" />
 	</ItemGroup>
 
 </Project>

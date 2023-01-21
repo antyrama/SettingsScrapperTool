@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Extensions.Configuration.AppService.Core.Extensions
+﻿namespace SettingsScrapper.Core.Extensions
 {
     internal static class StringExtensions
     {

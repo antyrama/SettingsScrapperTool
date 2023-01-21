@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core.Repository;
+namespace SettingsScrapper.Core.Repository;
 
 internal interface IConfigurationRepository
 {

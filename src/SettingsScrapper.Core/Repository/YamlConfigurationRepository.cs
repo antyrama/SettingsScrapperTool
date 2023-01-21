@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration.AppService.Core.Models;
+﻿using SettingsScrapper.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core.Repository;
+namespace SettingsScrapper.Core.Repository;
 
 internal class YamlConfigurationRepository : ConfigurationRepository
 {

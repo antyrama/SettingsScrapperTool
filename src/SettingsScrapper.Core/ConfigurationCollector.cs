@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Extensions.Configuration.AppService.Core.Extensions;
+using Microsoft.Extensions.Configuration;
+using SettingsScrapper.Core.Extensions;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core;
+namespace SettingsScrapper.Core;
 
 internal class ConfigurationCollector
 {

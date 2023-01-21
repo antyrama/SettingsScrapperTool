@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core.Repository;
+namespace SettingsScrapper.Core.Repository;
 
 internal class JsonConfigurationRepository : ConfigurationRepository
 {

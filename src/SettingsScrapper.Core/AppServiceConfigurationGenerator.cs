@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Configuration.AppService.Core.Repository;
+﻿using Microsoft.Extensions.Configuration;
+using SettingsScrapper.Core.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core;
+namespace SettingsScrapper.Core;
 
 public class AppServiceConfigurationGenerator
 {

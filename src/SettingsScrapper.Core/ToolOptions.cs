@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CommandLine;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core;
+namespace SettingsScrapper.Core;
 
 [Verb("generate", HelpText = "Generates JSON .NET app settings consumable by Azure DevOps step (AzureAppServiceSettings@1) configuring your app service. Configuration could be also wrapped in a YAML file as variables.")]
 public class ToolOptions

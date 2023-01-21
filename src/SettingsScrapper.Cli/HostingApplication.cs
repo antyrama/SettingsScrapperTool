@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.Configuration.AppService.Cli
+namespace SettingsScrapper.Cli
 {
     // Represents an application that uses Microsoft.Extensions.Hosting and supports
     // the various entry point flavors. The final model *does not* have an explicit CreateHost

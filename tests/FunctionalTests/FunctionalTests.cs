@@ -1,10 +1,10 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.AppService.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SettingsScrapper.Core;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using YamlDotNet.Serialization;

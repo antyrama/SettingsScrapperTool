@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Configuration.AppService.Core.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using SettingsScrapper.Core.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core;
+namespace SettingsScrapper.Core;
 
 internal class IncludeKeysGenerator
 {

@@ -2,7 +2,7 @@
 using CommandLine.Text;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration.AppService.Core;
+using SettingsScrapper.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Microsoft.Extensions.Configuration.AppService.Cli
+namespace SettingsScrapper.Cli
 {
     internal class Program
     {
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Configuration.AppService.Cli
                 Path.Combine(Directory.GetCurrentDirectory(), options.Assembly));
 
             var serviceProvider = GetServiceProvider(startupAssembly);
-            
+
             var generator = new AppServiceConfigurationGenerator(serviceProvider, options);
 
             generator.Generate();
@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.Configuration.AppService.Cli
                     $"Failed to generate configuration file with exit code:{process.ExitCode}");
             }
         }
-        
+
         private static IServiceProvider GetServiceProvider(Assembly startupAssembly)
         {
             try
@@ -111,7 +111,7 @@ namespace Microsoft.Extensions.Configuration.AppService.Cli
                 throw;
             }
         }
-        
+
         private static string EscapePath(string path)
         {
             return path.Contains(' ')

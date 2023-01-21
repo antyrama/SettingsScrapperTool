@@ -1,6 +1,6 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace Microsoft.Extensions.Configuration.AppService.Core.Models
+namespace SettingsScrapper.Core.Models
 {
     internal class Root
     {

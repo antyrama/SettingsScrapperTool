@@ -23,6 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="Microsoft.Extensions.Configuration.AppService.Cli" />
+		<InternalsVisibleTo Include="SettingsScrapper.Cli" />
 	</ItemGroup>
 </Project>
