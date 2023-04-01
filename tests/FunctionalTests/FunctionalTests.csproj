@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="configuration.changed.value.json" />
+    <None Remove="configuration.changed.value.yaml" />
+    <None Remove="configuration.extra.property.json" />
+    <None Remove="configuration.extra.property.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="configuration.extra.property.yaml" />
+    <EmbeddedResource Include="configuration.changed.value.yaml" />
+    <EmbeddedResource Include="configuration.extra.property.json" />
+    <EmbeddedResource Include="configuration.changed.value.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Moq" Version="4.18.3" />
+      <PackageReference Include="FluentAssertions" Version="6.8.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.1" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Antyrama.Tools.Scribe.Core\Antyrama.Tools.Scribe.Core.csproj" />
+    <ProjectReference Include="..\TestAppNet7.0\TestAppNet7.0.csproj" />
+  </ItemGroup>
+
+</Project>
