@@ -1,11 +1,11 @@
-﻿using SettingsScrapper.Core.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Antyrama.Tools.Scribe.Core.Models;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
-namespace SettingsScrapper.Core.Repository;
+namespace Antyrama.Tools.Scribe.Core.Repository;
 
 internal class YamlConfigurationRepository : ConfigurationRepository
 {

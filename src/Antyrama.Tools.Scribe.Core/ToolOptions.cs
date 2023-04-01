@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CommandLine;
 
-namespace SettingsScrapper.Core;
+namespace Antyrama.Tools.Scribe.Core;
 
 [Verb("generate", HelpText = "Generates JSON .NET app settings consumable by Azure DevOps step (AzureAppServiceSettings@1) configuring your app service. Configuration could be also wrapped in a YAML file as variables.")]
 public class ToolOptions
@@ -31,7 +31,7 @@ public class ToolOptions
     [Option('y', "to-yaml", Required = false, Default = false, HelpText = "Indicates whether configuration wrapped in YAML Azure DevOps variables file")]
     public bool WrapInYaml { get; set; }
 
-    [Option('f', "file-path-template", Default = "../../configuration.json", Required = false,
+    [Option('f', "file-path-template", Default = "./configuration.json", Required = false,
         HelpText = "File name template for output. Template may contain a placeholder for environment name. Example: configuration.{0}.json")]
     public string FilePathTemplate { get; set; }
 
@@ -68,7 +68,7 @@ public class ToolInternalOptions
     [Option('y', "to-yaml", Required = false, Default = false, HelpText = "Indicates whether configuration wrapped in YAML Azure DevOps variables file")]
     public bool WrapInYaml { get; set; }
 
-    [Option('f', "file-path-template", Default = "../../configuration.json", Required = false,
+    [Option('f', "file-path-template", Default = "./configuration.json", Required = false,
         HelpText = "File name template for output. Template may contain a placeholder for environment name. Example: configuration.{0}.json")]
     public string FilePathTemplate { get; set; }
 

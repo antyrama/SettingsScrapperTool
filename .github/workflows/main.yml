@@ -1,13 +1,10 @@
-name: CI
+name: Build and test each commit
 
 on:
-
   push:
     branches: [ "*" ]
   pull_request:
-    branches: [ "main" ]
-
-  workflow_dispatch:
+    branches: [ "main", "develop" ]
 
 jobs:
   build:

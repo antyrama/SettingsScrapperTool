@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace SettingsScrapper.Cli
+namespace Antyrama.Tools.Scribe.Cli
 {
     // Represents an application that uses Microsoft.Extensions.Hosting and supports
     // the various entry point flavors. The final model *does not* have an explicit CreateHost
@@ -51,7 +51,7 @@ namespace SettingsScrapper.Cli
             var factory = HostFactoryResolver.ResolveHostFactory(assembly,
                                                                  stopApplication: false,
                                                                  configureHostBuilder: ConfigureHostBuilder,
-                                                                 entrypointCompleted: OnEntryPointExit);
+                                                                 entryPointCompleted: OnEntryPointExit);
 
             // We're unable to resolve the factory. This could mean the application wasn't referencing the right
             // version of hosting.

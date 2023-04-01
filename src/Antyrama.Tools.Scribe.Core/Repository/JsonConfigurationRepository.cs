@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SettingsScrapper.Core.Repository;
+namespace Antyrama.Tools.Scribe.Core.Repository;
 
 internal class JsonConfigurationRepository : ConfigurationRepository
 {

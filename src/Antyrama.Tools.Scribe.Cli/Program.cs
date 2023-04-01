@@ -1,16 +1,16 @@
-﻿using CommandLine;
-using CommandLine.Text;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using SettingsScrapper.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
+using Antyrama.Tools.Scribe.Core;
+using CommandLine;
+using CommandLine.Text;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 
-namespace SettingsScrapper.Cli
+namespace Antyrama.Tools.Scribe.Cli
 {
     internal class Program
     {

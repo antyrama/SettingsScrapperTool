@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SettingsScrapper.Cli
+namespace Antyrama.Tools.Scribe.Cli
 {
     internal sealed class HostFactoryResolver
     {
@@ -16,7 +16,7 @@ namespace SettingsScrapper.Cli
         public const string CreateHostBuilder = nameof(CreateHostBuilder);
 
         // The amount of time we wait for the diagnostic source events to fire
-        private static readonly TimeSpan s_defaultWaitTimeout = Debugger.IsAttached ? Timeout.InfiniteTimeSpan : TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan DefaultWaitTimeout = Debugger.IsAttached ? Timeout.InfiniteTimeSpan : TimeSpan.FromSeconds(30);
 
         public static Func<string[], TWebHost> ResolveWebHostFactory<TWebHost>(Assembly assembly)
         {
@@ -43,7 +43,7 @@ namespace SettingsScrapper.Cli
                                                                  TimeSpan? waitTimeout = null,
                                                                  bool stopApplication = true,
                                                                  Action<object> configureHostBuilder = null,
-                                                                 Action<Exception> entrypointCompleted = null)
+                                                                 Action<Exception> entryPointCompleted = null)
         {
             if (assembly.EntryPoint is null)
             {
@@ -55,7 +55,7 @@ namespace SettingsScrapper.Cli
                 // Attempt to load hosting and check the version to make sure the events
                 // even have a chance of firing (they were added in .NET >= 6)
                 var hostingAssembly = Assembly.Load("Microsoft.Extensions.Hosting");
-                if (hostingAssembly.GetName().Version is Version version && version.Major < 6)
+                if (hostingAssembly.GetName().Version is { Major: < 6 })
                 {
                     return null;
                 }
@@ -69,7 +69,7 @@ namespace SettingsScrapper.Cli
                 return null;
             }
 
-            return args => new HostingListener(args, assembly.EntryPoint, waitTimeout ?? s_defaultWaitTimeout, stopApplication, configureHostBuilder, entrypointCompleted).CreateHost();
+            return args => new HostingListener(args, assembly.EntryPoint, waitTimeout ?? DefaultWaitTimeout, stopApplication, configureHostBuilder, entryPointCompleted).CreateHost();
         }
 
         private static Func<string[], T> ResolveFactory<T>(Assembly assembly, string name)
@@ -173,100 +173,97 @@ namespace SettingsScrapper.Cli
 
             private readonly TaskCompletionSource<object> _hostTcs = new TaskCompletionSource<object>();
             private IDisposable _disposable;
-            private Action<object> _configure;
-            private Action<Exception> _entrypointCompleted;
-            private static readonly AsyncLocal<HostingListener> _currentListener = new AsyncLocal<HostingListener>();
+            private readonly Action<object> _configure;
+            private readonly Action<Exception> _entryPointCompleted;
+            private static readonly AsyncLocal<HostingListener> CurrentListener = new AsyncLocal<HostingListener>();
 
-            public HostingListener(string[] args, MethodInfo entryPoint, TimeSpan waitTimeout, bool stopApplication, Action<object> configure, Action<Exception> entrypointCompleted)
+            public HostingListener(string[] args, MethodInfo entryPoint, TimeSpan waitTimeout, bool stopApplication, Action<object> configure, Action<Exception> entryPointCompleted)
             {
                 _args = args;
                 _entryPoint = entryPoint;
                 _waitTimeout = waitTimeout;
                 _stopApplication = stopApplication;
                 _configure = configure;
-                _entrypointCompleted = entrypointCompleted;
+                _entryPointCompleted = entryPointCompleted;
             }
 
             public object CreateHost()
             {
-                using (var subscription = DiagnosticListener.AllListeners.Subscribe(this))
+                using var subscription = DiagnosticListener.AllListeners.Subscribe(this);
+                // Kick off the entry point on a new thread so we don't block the current one
+                // in case we need to timeout the execution
+                var thread = new Thread(() =>
                 {
-
-                    // Kick off the entry point on a new thread so we don't block the current one
-                    // in case we need to timeout the execution
-                    var thread = new Thread(() =>
-                    {
-                        Exception exception = null;
-
-                        try
-                        {
-                            // Set the async local to the instance of the HostingListener so we can filter events that
-                            // aren't scoped to this execution of the entry point.
-                            _currentListener.Value = this;
-
-                            var parameters = _entryPoint.GetParameters();
-                            if (parameters.Length == 0)
-                            {
-                                _entryPoint.Invoke(null, Array.Empty<object>());
-                            }
-                            else
-                            {
-                                _entryPoint.Invoke(null, new object[] { _args });
-                            }
-
-                            // Try to set an exception if the entry point returns gracefully, this will force
-                            // build to throw
-                            _hostTcs.TrySetException(new InvalidOperationException("Unable to build IHost"));
-                        }
-                        catch (TargetInvocationException tie) when (tie.InnerException is StopTheHostException)
-                        {
-                            // The host was stopped by our own logic
-                        }
-                        catch (TargetInvocationException tie)
-                        {
-                            exception = tie.InnerException ?? tie;
-
-                            // Another exception happened, propagate that to the caller
-                            _hostTcs.TrySetException(exception);
-                        }
-                        catch (Exception ex)
-                        {
-                            exception = ex;
-
-                            // Another exception happened, propagate that to the caller
-                            _hostTcs.TrySetException(ex);
-                        }
-                        finally
-                        {
-                            // Signal that the entry point is completed
-                            _entrypointCompleted?.Invoke(exception);
-                        }
-                    })
-                    {
-                        // Make sure this doesn't hang the process
-                        IsBackground = true
-                    };
-
-                    // Start the thread
-                    thread.Start();
+                    Exception exception = null;
 
                     try
                     {
-                        // Wait before throwing an exception
-                        if (!_hostTcs.Task.Wait(_waitTimeout))
+                        // Set the async local to the instance of the HostingListener so we can filter events that
+                        // aren't scoped to this execution of the entry point.
+                        CurrentListener.Value = this;
+
+                        var parameters = _entryPoint.GetParameters();
+                        if (parameters.Length == 0)
                         {
-                            throw new InvalidOperationException("Unable to build IHost");
+                            _entryPoint.Invoke(null, Array.Empty<object>());
                         }
+                        else
+                        {
+                            _entryPoint.Invoke(null, new object[] { _args });
+                        }
+
+                        // Try to set an exception if the entry point returns gracefully, this will force
+                        // build to throw
+                        _hostTcs.TrySetException(new InvalidOperationException("Unable to build IHost"));
                     }
-                    catch (AggregateException) when (_hostTcs.Task.IsCompleted)
+                    catch (TargetInvocationException tie) when (tie.InnerException is StopTheHostException)
                     {
-                        // Lets this propagate out of the call to GetAwaiter().GetResult()
+                        // The host was stopped by our own logic
                     }
+                    catch (TargetInvocationException tie)
+                    {
+                        exception = tie.InnerException ?? tie;
 
-                    Debug.Assert(_hostTcs.Task.IsCompleted);
+                        // Another exception happened, propagate that to the caller
+                        _hostTcs.TrySetException(exception);
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
 
-                    return _hostTcs.Task.GetAwaiter().GetResult();
+                        // Another exception happened, propagate that to the caller
+                        _hostTcs.TrySetException(ex);
+                    }
+                    finally
+                    {
+                        // Signal that the entry point is completed
+                        _entryPointCompleted?.Invoke(exception);
+                    }
+                })
+                {
+                    // Make sure this doesn't hang the process
+                    IsBackground = true
+                };
+
+                // Start the thread
+                thread.Start();
+
+                try
+                {
+                    // Wait before throwing an exception
+                    if (!_hostTcs.Task.Wait(_waitTimeout))
+                    {
+                        throw new InvalidOperationException("Unable to build IHost");
+                    }
                 }
+                catch (AggregateException) when (_hostTcs.Task.IsCompleted)
+                {
+                    // Lets this propagate out of the call to GetAwaiter().GetResult()
+                }
+
+                Debug.Assert(_hostTcs.Task.IsCompleted);
+
+                return _hostTcs.Task.GetAwaiter().GetResult();
             }
 
             public void OnCompleted()
@@ -281,7 +278,7 @@ namespace SettingsScrapper.Cli
 
             public void OnNext(DiagnosticListener value)
             {
-                if (_currentListener.Value != this)
+                if (CurrentListener.Value != this)
                 {
                     // Ignore events that aren't for this listener
                     return;
@@ -295,7 +292,7 @@ namespace SettingsScrapper.Cli
 
             public void OnNext(KeyValuePair<string, object> value)
             {
-                if (_currentListener.Value != this)
+                if (CurrentListener.Value != this)
                 {
                     // Ignore events that aren't for this listener
                     return;

@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using SettingsScrapper.Core.Repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Antyrama.Tools.Scribe.Core.Repository;
+using Microsoft.Extensions.Configuration;
 
-namespace SettingsScrapper.Core;
+namespace Antyrama.Tools.Scribe.Core;
 
 public class AppServiceConfigurationGenerator
 {

@@ -1,4 +1,4 @@
-﻿namespace SettingsScrapper.Core.Extensions
+﻿namespace Antyrama.Tools.Scribe.Core.Extensions
 {
     internal static class StringExtensions
     {

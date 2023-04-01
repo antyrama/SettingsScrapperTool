@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Antyrama.Tools.Scribe.Core.Extensions;
 using Microsoft.Extensions.Configuration;
-using SettingsScrapper.Core.Extensions;
 
-namespace SettingsScrapper.Core;
+namespace Antyrama.Tools.Scribe.Core;
 
 internal class ConfigurationCollector
 {

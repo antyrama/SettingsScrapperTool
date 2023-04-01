@@ -4,9 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SettingsScrapper.Core;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Antyrama.Tools.Scribe.Core;
 using YamlDotNet.Serialization;
 
 namespace FunctionalTests;

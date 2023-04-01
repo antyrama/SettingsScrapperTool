@@ -1,0 +1,28 @@
+name: Pack & publish on tag
+
+on:
+  push:
+    tags: [ "*" ]
+
+env:
+    VERSION: ${{ github.ref_name }}
+    NUGET_SECRET: ${{ secrets.NUGET_PUBLISH_SECRET }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build
+      run: dotnet build --configuration Release
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+    - name: Pack CLI with version $VERSION
+      run: dotnet pack ./src/Antyrama.Tools.Scribe.Cli/Antyrama.Tools.Scribe.Cli.csproj --configuration Release /p:Version=$VERSION
+    - name: Publish CLI to nuGet
+      run: dotnet nuget push src/Antyrama.Tools.Scribe.Cli/bin/Release/Antyrama.Tools.Scribe.Cli.$VERSION.nupkg --api-key $NUGET_SECRET --source "https://api.nuget.org/v3/index.json"
+    - name: Pack Core with version $VERSION
+      run: dotnet pack ./src/Antyrama.Tools.Scribe.Core/Antyrama.Tools.Scribe.Core.csproj --configuration Release /p:Version=$VERSION
+    - name: Publish Core to nuGet
+      run: dotnet nuget push src/Antyrama.Tools.Scribe.Core/bin/Release/Antyrama.Tools.Scribe.Core.$VERSION.nupkg --api-key $NUGET_SECRET --source "https://api.nuget.org/v3/index.json"      

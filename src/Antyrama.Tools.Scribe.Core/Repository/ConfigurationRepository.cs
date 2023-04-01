@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace SettingsScrapper.Core.Repository;
+namespace Antyrama.Tools.Scribe.Core.Repository;
 
 internal interface IConfigurationRepository
 {

@@ -1,6 +1,6 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace SettingsScrapper.Core.Models
+namespace Antyrama.Tools.Scribe.Core.Models
 {
     internal class Root
     {
