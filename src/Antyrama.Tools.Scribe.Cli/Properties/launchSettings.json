@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Microsoft.Extensions.Configuration.AppService.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "generate generate --assembly ..\\..\\..\\..\\..\\tests\\TestAppNet6.0\\bin\\Debug\\net6.0\\TestAppNet6.0.dll --file-path-template ../config.net6.0.json --providers JsonConfigurationProvider --separator __ --yaml-variable-name app_config"
+    }
+  }
+}

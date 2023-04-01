@@ -1,0 +1,8 @@
+variables:
+  some_name: |-
+      [
+        {"name": "AllowedHosts", "value": "*", "slotSetting": false},
+        {"name": "Logging__ApplicationInsights__EnableAdaptiveSampling", "value": "False", "slotSetting": false, "extraProperty": "extra value"},
+        {"name": "Logging__LogLevel__Default", "value": "Information", "slotSetting": false},
+        {"name": "Logging__LogLevel__Microsoft.AspNetCore", "value": "Warning", "slotSetting": false}
+      ]

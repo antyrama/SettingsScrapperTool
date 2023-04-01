@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antyrama.Tools.Scribe.Core" Version="0.0.3-rc" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet restore" />
+    <Exec Command="dotnet tool restore" />
+    <Exec Command="dotnet tool run app-settings-to-file generate --to-yaml --file-path-template ./configuration.yaml --assembly $(OutputPath)\$(AssemblyName).dll" />
+  </Target>
+
+</Project>
