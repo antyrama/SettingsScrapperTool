@@ -71,7 +71,7 @@ Tool is customisable, take a look at list of all arguments that can be passed. E
 | -s | --separator | :heavy_check_mark: | Setting nesting separator | `__` (double underscore) |
 | -v | &#x2011;&#x2011;yaml&#x2011;variable&#x2011;name | :heavy_check_mark: | YAML variable name | `app_config` |
 | -y | --to-yaml | :heavy_check_mark: | Indicates whether configuration wrapped in YAML Azure DevOps variables file | `false` |
-| -f | --file-path-template | :heavy_check_mark: | File name template for output. Template may contain a placeholder for environment name. Example:                     `configuration.{0}.json` | `./configuration.json` |
+| -f | --file-path-template | :heavy_check_mark: | File name template for output. Template may contain a placeholder for environment name. Example: `configuration.{0}.json` | `./configuration.json` |
 | -e | --environments | :heavy_check_mark: | A list of environment names. Separate configuration file will be created per each environment. Required when file name template contains placeholder | |
 
 ### Configuration providers
