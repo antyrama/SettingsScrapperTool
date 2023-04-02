@@ -1,6 +1,6 @@
 # Settings Scrapper Tool
 
-[![Build Status](https://github.com/antyrama/SettingsScrapperTool/workflows/CI/badge.svg)](https://github.com/antyrama/SettingsScrapperTool/actions?query=workflow%3ACI) 
+[![Build Status](https://github.com/antyrama/SettingsScrapperTool/workflows/Build%20and%20test%20each%20commit/badge.svg)](https://github.com/antyrama/SettingsScrapperTool/actions?query=workflow%3ABuild%20and%20test%20each%20commit) 
 [![NuGet](https://img.shields.io/nuget/v/Antyrama.Tools.Scribe.Cli.svg)](https://nuget.org/packages/Antyrama.Tools.Scribe.Cli) 
 [![Nuget](https://img.shields.io/nuget/dt/Antyrama.Tools.Scribe.Cli.svg)](https://nuget.org/packages/Antyrama.Tools.Scribe.Cli)
 
@@ -9,7 +9,7 @@ A smart CLI tool that automates the tedious task of configuring application serv
 ## What it does?
 Once executed, tool will hook up to host of `Microsoft.NET.Sdk.Web` application (NET6&7 only), collect all application settings and update your configuration JSON or YAML file.
 
-## Get Started
+## Getting started
 Tool can be installed using the `Nuget package manager` or the `dotnet` CLI.
 
 ### 1. Create tool manifest
@@ -47,10 +47,10 @@ According to the Microsoft [documentation](https://learn.microsoft.com/en-us/dot
 If latest version of your installed SDK is higher than your project target framework, add anywhere in your project hierarchy `global.json` file with below content:
 ``` json
 {
-	"sdk": {
-		"version": "6.0.0",
-		"rollForward": "latestFeature"
-	}
+  "sdk": {
+    "version": "6.0.0",
+    "rollForward": "latestFeature"
+  }
 }
 ```
 
@@ -101,7 +101,7 @@ steps:
 
 ### Where are my files?
 By default, the configuration file(s) are placed in the same directory as your `.csproj`. Depending on the folder structure of your solution you may want to place the files elsewhere. 
-To do this, set option `--file-path-template` to desired value. The option allows you to pass relative paths as well, e.g. `../../configuration.yaml`
+To do this, set option `--file-path-template` to desired value. The option allows you to pass relative paths, e.g. `../../configuration.yaml`
 
 ### Multiple environment setup
 Tool is able to create one configuration file per environment. Set option `--environments` to `dev test prod` and `--file-path-template` to `./configuration.{0}.yaml`, will create three files
