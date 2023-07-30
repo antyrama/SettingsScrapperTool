@@ -1,15 +1,14 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace Antyrama.Tools.Scribe.Core.Models
-{
-    internal class Root
-    {
-        [YamlMember(Alias = "variables")]
-        public Variables Variables { get; set; }
-    }
+namespace Antyrama.Tools.Scribe.Core.Models;
 
-    internal class Variables
-    {
-        public string AppConfig { get; set; }
-    }
+internal class Root
+{
+    [YamlMember(Alias = "variables")]
+    public Variables Variables { get; set; }
+}
+
+internal class Variables
+{
+    public string AppConfig { get; set; }
 }

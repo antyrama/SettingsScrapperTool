@@ -1,10 +1,9 @@
-﻿namespace Antyrama.Tools.Scribe.Core.Extensions
+﻿namespace Antyrama.Tools.Scribe.Core.Extensions;
+
+internal static class StringExtensions
 {
-    internal static class StringExtensions
+    public static string ReplaceSeparator(this string key, string replacement)
     {
-        public static string ReplaceSeparator(this string key, string replacement)
-        {
-            return key.Replace(":", replacement);
-        }
+        return key.Replace(":", replacement);
     }
 }
