@@ -10,113 +10,112 @@ using CommandLine.Text;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Antyrama.Tools.Scribe.Cli
+namespace Antyrama.Tools.Scribe.Cli;
+
+internal class Program
 {
-    internal class Program
+    public static int Main(string[] args)
     {
-        public static int Main(string[] args)
+        var parser = Parser.Default;
+        var result = parser.ParseArguments<ToolOptions, ToolInternalOptions>(args);
+
+        try
         {
-            var parser = Parser.Default;
-            var result = parser.ParseArguments<ToolOptions, ToolInternalOptions>(args);
+            result
+                .WithParsed<ToolOptions>(options => Generate(parser, options))
+                .WithParsed<ToolInternalOptions>(InnerGenerate)
+                .WithNotParsed(errors => DisplayHelp(result, errors));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
 
-            try
-            {
-                result
-                    .WithParsed<ToolOptions>(options => Generate(parser, options))
-                    .WithParsed<ToolInternalOptions>(InnerGenerate)
-                    .WithNotParsed(errors => DisplayHelp(result, errors));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-
-                return -1;
-            }
-
-            return 0;
+            return -1;
         }
 
-        private static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
-        {
-            var helpText = errs.IsVersion()
-                ? HelpText.AutoBuild(result)
-                : HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e);
+        return 0;
+    }
 
-            Console.WriteLine(helpText);
+    private static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
+    {
+        var helpText = errs.IsVersion()
+            ? HelpText.AutoBuild(result)
+            : HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e);
+
+        Console.WriteLine(helpText);
+    }
+
+    private static void InnerGenerate(ToolInternalOptions options)
+    {
+        Console.WriteLine($"Assembly to load: {options.Assembly}");
+
+        var startupAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(
+            Path.Combine(Directory.GetCurrentDirectory(), options.Assembly));
+
+        var serviceProvider = GetServiceProvider(startupAssembly);
+
+        var generator = new AppServiceConfigurationGenerator(serviceProvider, options);
+
+        generator.Generate();
+    }
+
+    private static void Generate(Parser parser, ToolOptions options)
+    {
+        if (!File.Exists(options.Assembly))
+        {
+            throw new FileNotFoundException(options.Assembly);
         }
 
-        private static void InnerGenerate(ToolInternalOptions options)
+        var depsFile = options.Assembly.Replace(".dll", ".deps.json");
+        var runtimeConfig = options.Assembly.Replace(".dll", ".runtimeconfig.json");
+
+        var commandLine = string.Format(
+                        "exec --depsfile {0} --runtimeconfig {1} {2} _{3}",
+                        EscapePath(depsFile),
+                        EscapePath(runtimeConfig),
+                        EscapePath(typeof(Program).GetTypeInfo().Assembly.Location),
+                        string.Join(' ', parser.FormatCommandLineArgs(options))
+                    );
+
+        Console.WriteLine($"Executing: {commandLine}");
+
+        var process = Process.Start("dotnet", commandLine);
+
+        process?.WaitForExit();
+
+        if (process?.ExitCode < 0)
         {
-            Console.WriteLine($"Assembly to load: {options.Assembly}");
-
-            var startupAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(
-                Path.Combine(Directory.GetCurrentDirectory(), options.Assembly));
-
-            var serviceProvider = GetServiceProvider(startupAssembly);
-
-            var generator = new AppServiceConfigurationGenerator(serviceProvider, options);
-
-            generator.Generate();
+            throw new InvalidOperationException(
+                $"Failed to generate configuration file with exit code:{process.ExitCode}");
         }
+    }
 
-        private static void Generate(Parser parser, ToolOptions options)
+    private static IServiceProvider GetServiceProvider(Assembly startupAssembly)
+    {
+        try
         {
-            if (!File.Exists(options.Assembly))
+            return WebHost.CreateDefaultBuilder()
+               .UseStartup(startupAssembly.GetName().Name)
+               .Build()
+               .Services;
+        }
+        catch
+        {
+            var serviceProvider = HostingApplication.GetServiceProvider(startupAssembly);
+
+            if (serviceProvider != null)
             {
-                throw new FileNotFoundException(options.Assembly);
+                return serviceProvider;
             }
 
-            var depsFile = options.Assembly.Replace(".dll", ".deps.json");
-            var runtimeConfig = options.Assembly.Replace(".dll", ".runtimeconfig.json");
-
-            var commandLine = string.Format(
-                            "exec --depsfile {0} --runtimeconfig {1} {2} _{3}",
-                            EscapePath(depsFile),
-                            EscapePath(runtimeConfig),
-                            EscapePath(typeof(Program).GetTypeInfo().Assembly.Location),
-                            string.Join(' ', parser.FormatCommandLineArgs(options))
-                        );
-
-            Console.WriteLine($"Executing: {commandLine}");
-
-            var process = Process.Start("dotnet", commandLine);
-
-            process?.WaitForExit();
-
-            if (process?.ExitCode < 0)
-            {
-                throw new InvalidOperationException(
-                    $"Failed to generate configuration file with exit code:{process.ExitCode}");
-            }
+            throw;
         }
+    }
 
-        private static IServiceProvider GetServiceProvider(Assembly startupAssembly)
-        {
-            try
-            {
-                return WebHost.CreateDefaultBuilder()
-                   .UseStartup(startupAssembly.GetName().Name)
-                   .Build()
-                   .Services;
-            }
-            catch
-            {
-                var serviceProvider = HostingApplication.GetServiceProvider(startupAssembly);
-
-                if (serviceProvider != null)
-                {
-                    return serviceProvider;
-                }
-
-                throw;
-            }
-        }
-
-        private static string EscapePath(string path)
-        {
-            return path.Contains(' ')
-                ? "\"" + path + "\""
-                : path;
-        }
+    private static string EscapePath(string path)
+    {
+        return path.Contains(' ')
+            ? "\"" + path + "\""
+            : path;
     }
 }
