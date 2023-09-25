@@ -49,6 +49,8 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
         var builder = new StringBuilder(s, s.Length * 2);
 
         builder.Replace("\":\"", "\": \"");
+        builder.Replace("\":f", "\": f");
+        builder.Replace("\":t", "\": t");
         builder.Replace("\",\"", "\", \"");
 
         return builder.ToString();
