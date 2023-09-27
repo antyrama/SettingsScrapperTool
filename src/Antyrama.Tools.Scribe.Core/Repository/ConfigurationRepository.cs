@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Antyrama.Tools.Scribe.Core.Extensions;
 using Newtonsoft.Json;
 
 namespace Antyrama.Tools.Scribe.Core.Repository;
@@ -19,18 +19,18 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
 
     public abstract void Save(Stream stream, IEnumerable<IReadOnlyDictionary<string, object>> settings);
 
-    protected string Serialize(IEnumerable<IReadOnlyDictionary<string, object>> settings)
+    protected static string Serialize(IEnumerable<IReadOnlyDictionary<string, object>> settings)
     {
-        var serialized = settings.Select(setting =>
-            BeautifyJson($"  {JsonConvert.SerializeObject(setting)}"));
+        var serialized = settings.Select(setting => $"  {JsonConvert.SerializeObject(setting)}");
 
         var separator = $",{Environment.NewLine}";
-        var formatted = string.Join(separator, serialized);
+        var formatted = string.Join(separator, serialized)
+            .BeautifyJson();
 
         return $"[{Environment.NewLine}{formatted}{Environment.NewLine}]";
     }
 
-    protected IReadOnlyDictionary<string, object>[] Deserialize(string settings)
+    protected static IReadOnlyDictionary<string, object>[] Deserialize(string settings)
     {
         try
         {
@@ -42,17 +42,5 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
         {
             return Array.Empty<IReadOnlyDictionary<string, object>>();
         }
-    }
-
-    private static string BeautifyJson(string s)
-    {
-        var builder = new StringBuilder(s, s.Length * 2);
-
-        builder.Replace("\":\"", "\": \"");
-        builder.Replace("\":f", "\": f");
-        builder.Replace("\":t", "\": t");
-        builder.Replace("\",\"", "\", \"");
-
-        return builder.ToString();
     }
 }
