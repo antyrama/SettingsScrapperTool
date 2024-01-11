@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>Service configuration file generator Command Line Tools</Description>
@@ -6,7 +6,7 @@
     <PackAsTool>true</PackAsTool>
     <IsPackable>true</IsPackable>
     <PackageId>Antyrama.Tools.Scribe.Cli</PackageId>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <ToolCommandName>app-settings-to-file</ToolCommandName>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/antyrama/SettingsScrapperTool</RepositoryUrl>
