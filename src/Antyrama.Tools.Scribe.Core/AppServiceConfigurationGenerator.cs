@@ -35,8 +35,8 @@ public class AppServiceConfigurationGenerator
             .ToDictionary(s => s.Key, s => s.Value);
 
         var repository = _options.WrapInYaml
-            ? (ConfigurationRepository)new YamlConfigurationRepository(_options.YamlVariableName)
-            : new JsonConfigurationRepository();
+            ? (ConfigurationRepository)new YamlConfigurationRepository(_options.YamlVariableName, _options)
+            : new JsonConfigurationRepository(_options);
 
         foreach (var filename in GetConfigurationFiles(_options))
         {
@@ -48,7 +48,7 @@ public class AppServiceConfigurationGenerator
         }
     }
 
-    private IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> Load(IConfigurationRepository repository, string filename)
+    private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> Load(IConfigurationRepository repository, string filename)
     {
         try
         {
@@ -62,7 +62,7 @@ public class AppServiceConfigurationGenerator
         }
     }
 
-    private void Save(IConfigurationRepository repository, string filename, IEnumerable<IReadOnlyDictionary<string, object>> settings)
+    private static void Save(IConfigurationRepository repository, string filename, IEnumerable<IReadOnlyDictionary<string, object>> settings)
     {
         using var stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
 
@@ -119,6 +119,5 @@ public class AppServiceConfigurationGenerator
         }
 
         throw new InvalidOperationException("File path template must contain '{0}' as environment placeholder when environments specified.");
-
     }
 }

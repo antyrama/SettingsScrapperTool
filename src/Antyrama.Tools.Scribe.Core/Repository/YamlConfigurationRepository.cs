@@ -12,7 +12,8 @@ internal class YamlConfigurationRepository : ConfigurationRepository
     private readonly Serializer _serializer;
     private readonly Deserializer _deserializer;
 
-    public YamlConfigurationRepository(string variableName)
+    public YamlConfigurationRepository(string variableName, ToolInternalOptions options)
+        : base(options)
     {
         _serializer = new SerializerBuilder()
             .WithAttributeOverride<Variables>(variables => variables.AppConfig,
