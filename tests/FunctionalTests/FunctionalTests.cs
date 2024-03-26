@@ -23,14 +23,20 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldCreateEntryWhenFoundInAppSettingsJson(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldCreateEntryWhenFoundInAppSettingsJson(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
 
@@ -51,14 +57,20 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldExcludeEntryWhenSetInOptions(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldExcludeEntryWhenSetInOptions(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         options.ExcludeKeys = new[] { "Logging__ApplicationInsights__EnableAdaptiveSampling" };
 
@@ -80,9 +92,15 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldIncludeEntryWhenSetInOptionsButNotSelectedByProvider(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldIncludeEntryWhenSetInOptionsButNotSelectedByProvider(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var varName = "MAGIC_ENVIRONMENT_VARIABLE";
@@ -91,7 +109,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
 
         var serviceProvider = _factory.WithWebHostBuilder(_ => { }).Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         options.IncludeKeys = new[] { varName };
 
@@ -114,9 +132,15 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldIncludeAllEnvironmentVariablesWhenProviderSelected(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldIncludeAllEnvironmentVariablesWhenProviderSelected(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var varName = "MAGIC_ENVIRONMENT_VARIABLE";
@@ -125,7 +149,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
 
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         options.Providers = new[] { "EnvironmentVariablesConfigurationProvider" };
 
@@ -146,9 +170,15 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldNotChangeAnExistingConfigurationEntryValueWhenSettingChanged(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldNotChangeAnExistingConfigurationEntryValueWhenSettingChanged(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var settingKey = "Logging:ApplicationInsights:EnableAdaptiveSampling";
@@ -166,7 +196,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
 
         var serviceProvider = factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
 
@@ -193,16 +223,22 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldNotRemoveExtraPropertiesOnAnExistingConfigurationEntry(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldNotRemoveExtraPropertiesOnAnExistingConfigurationEntry(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var settingKey = "Logging__ApplicationInsights__EnableAdaptiveSampling";
 
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, FileTemplate);
+        var options = CreateOptions(wrapInYaml, FileTemplate, eol);
 
         var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
 
@@ -226,14 +262,20 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldGenerateFilePerEnvironmentGivenInOptions(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldGenerateFilePerEnvironmentGivenInOptions(bool wrapInYaml, EndOfLine? eol)
     {
         // assign
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, $"{FileTemplate}.{{0}}");
+        var options = CreateOptions(wrapInYaml, $"{FileTemplate}.{{0}}", eol);
 
         options.Environments = new[] { "dev", "test", "prod" };
 
@@ -258,14 +300,20 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void ShouldHandleRelativePaths(bool wrapInYaml)
+    [InlineData(false, null)]
+    [InlineData(false, EndOfLine.Cr)]
+    [InlineData(false, EndOfLine.CrLf)]
+    [InlineData(false, EndOfLine.Lf)]
+    [InlineData(true, null)]
+    [InlineData(true, EndOfLine.Cr)]
+    [InlineData(true, EndOfLine.CrLf)]
+    [InlineData(true, EndOfLine.Lf)]
+    public void ShouldHandleRelativePaths(bool wrapInYaml, EndOfLine? eof)
     {
         // assign
         var serviceProvider = _factory.Server.Services;
 
-        var options = CreateOptions(wrapInYaml, $"..\\{FileTemplate}");
+        var options = CreateOptions(wrapInYaml, $"..\\{FileTemplate}", eof);
 
         var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
 
@@ -274,6 +322,46 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
 
         // assert
         File.Exists(options.FilePathTemplate).Should().BeTrue();
+        File.Delete(options.FilePathTemplate);
+    }
+
+    [Fact]
+    public async Task ShouldExcludeExactSetting()
+    {
+        // assign
+        var serviceProvider = _factory.Server.Services;
+
+        var options = CreateOptions(false, $"..\\{FileTemplate}", null, new[] { "AllowedHosts" });
+
+        var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
+
+        // act
+        sut.Generate();
+
+        // assert
+        var json = await File.ReadAllTextAsync(options.FilePathTemplate);
+        await VerifyJson(json);
+
+        File.Delete(options.FilePathTemplate);
+    }
+
+    [Fact]
+    public async Task ShouldExcludeWithAllNestedSettings()
+    {
+        // assign
+        var serviceProvider = _factory.Server.Services;
+
+        var options = CreateOptions(false, $"..\\{FileTemplate}", null, new[] { "Logging:LogLevel" });
+
+        var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
+
+        // act
+        sut.Generate();
+
+        // assert
+        var json = await File.ReadAllTextAsync(options.FilePathTemplate);
+        await VerifyJson(json);
+
         File.Delete(options.FilePathTemplate);
     }
 
@@ -301,8 +389,8 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
         return JsonConvert.DeserializeObject<JArray>(content!);
     }
 
-    private static ToolInternalOptions CreateOptions(bool wrapInYaml, string fileTemplate,
-        [CallerMemberName] string prefix = "")
+    private static ToolInternalOptions CreateOptions(bool wrapInYaml, string fileTemplate, EndOfLine? eof,
+        string[]? exclude = null, [CallerMemberName] string prefix = "")
     {
         var options = new ToolInternalOptions
         {
@@ -311,10 +399,11 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
             Assembly = "assembly",
             FilePathTemplate = Path.Combine(Environment.CurrentDirectory, fileTemplate.Replace("[prefix]", prefix)),
             Environments = Array.Empty<string>(),
-            ExcludeKeys = Array.Empty<string>(),
+            ExcludeKeys = exclude ?? Array.Empty<string>(),
             IncludeKeys = Array.Empty<string>(),
             YamlVariableName = "some_name",
-            WrapInYaml = wrapInYaml
+            WrapInYaml = wrapInYaml,
+            Eol = eof
         };
         return options;
     }

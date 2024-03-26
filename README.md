@@ -7,7 +7,7 @@
 A smart CLI tool that automates the tedious task of configuring application services in the cloud.
 
 ## What it does?
-Once executed, tool will hook up to host of `Microsoft.NET.Sdk.Web` application (NET6&7 only), collect all application settings and update your configuration JSON or YAML file.
+Once executed, tool will hook up to host of `Microsoft.NET.Sdk.Web` application, collect all application settings and update your configuration JSON or YAML file.
 
 ## Getting started
 Tool can be installed using the `Nuget package manager` or the `dotnet` CLI.
@@ -67,12 +67,13 @@ Tool is customisable, take a look at list of all arguments that can be passed. E
 | -a | --assembly | :x: | Startup assembly file path and name. Can be obtained by `$(OutputPath)\$(AssemblyName).dll` | |
 | -p | --providers | :heavy_check_mark: | A list of configuration providers from which all setting keys are taken. All types derived from `IConfigurationProvider` | `JsonConfigurationProvider` |
 | -i | --include | :heavy_check_mark: | A list of keys to include despite of providers list configuration. Example: `PROCESSOR_ARCHITECTURE` | |
-| -x | --exclude | :heavy_check_mark: | A list of keys to exclude from all collected settings. Example: `Logging:LogLevel:Microsoft.AspNetCore` | |
+| -x | --exclude | :heavy_check_mark: | A list of keys to exclude from all collected settings. Example: `Logging:LogLevel:Microsoft.AspNetCore` will remove exact key, `Logging:LogLevel` will remove also all nested keys | |
 | -s | --separator | :heavy_check_mark: | Setting nesting separator | `__` (double underscore) |
 | -v | &#x2011;&#x2011;yaml&#x2011;variable&#x2011;name | :heavy_check_mark: | YAML variable name | `app_config` |
 | -y | --to-yaml | :heavy_check_mark: | Indicates whether configuration wrapped in YAML Azure DevOps variables file | `false` |
 | -f | --file-path-template | :heavy_check_mark: | File name template for output. Template may contain a placeholder for environment name. Example: `configuration.{0}.json` | `./configuration.json` |
 | -e | --environments | :heavy_check_mark: | A list of environment names. Separate configuration file will be created per each environment. Required when file name template contains placeholder | |
+| -l | -eol | :heavy_check_mark: | Customize end-of-line characters, possible values: `Cr`, `CrLf` or `Lf`, when skipped, operating system default end-of-line characters will be used | |
 
 ### Configuration providers
 If you'd like to include all the settings collected by different configuration provider, add them all by `--providers` option. More information about [configuration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers).

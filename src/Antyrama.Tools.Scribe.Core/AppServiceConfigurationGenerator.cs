@@ -21,23 +21,16 @@ public class AppServiceConfigurationGenerator
 
     public void Generate()
     {
-        var configuration = (IConfiguration)_serviceProvider.GetService(typeof(IConfiguration));
+        var desiredSettings = CollectSettings();
 
-        var includeKeys = new IncludeKeysGenerator(configuration)
-            .Generate(_options.Providers, _options.IncludeKeys, _options.PathSeparator);
+        var repository = CreateRepositoryInstance();
 
-        var allSettings = new ConfigurationCollector(configuration)
-            .Collect(_options.PathSeparator);
+        ProcessConfigurationFiles(repository, desiredSettings);
+    }
 
-        var desiredSettings = allSettings
-            .IntersectBy(includeKeys, setting => setting.Key)
-            .ExceptBy(_options.ExcludeKeys, setting => setting.Key)
-            .ToDictionary(s => s.Key, s => s.Value);
-
-        var repository = _options.WrapInYaml
-            ? (ConfigurationRepository)new YamlConfigurationRepository(_options.YamlVariableName)
-            : new JsonConfigurationRepository();
-
+    private void ProcessConfigurationFiles(ConfigurationRepository repository,
+        Dictionary<string, string> desiredSettings)
+    {
         foreach (var filename in GetConfigurationFiles(_options))
         {
             var currentSettings = Load(repository, filename);
@@ -48,7 +41,37 @@ public class AppServiceConfigurationGenerator
         }
     }
 
-    private IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> Load(IConfigurationRepository repository, string filename)
+    private Dictionary<string, string> CollectSettings()
+    {
+        var excludeKeys = _options.ExcludeKeys
+            .Select(x => x.Replace(":", _options.PathSeparator))
+            .ToArray();
+
+        var configuration = (IConfiguration)_serviceProvider.GetService(typeof(IConfiguration));
+
+        var includeKeys = new IncludeKeysGenerator(configuration)
+            .Generate(_options.Providers, _options.IncludeKeys, _options.PathSeparator);
+
+        var allSettings = new ConfigurationCollector(configuration)
+            .Collect(_options.PathSeparator);
+
+        var desiredSettings = allSettings
+            .IntersectBy(includeKeys, setting => setting.Key)
+            .ToDictionary(s => s.Key, s => s.Value);
+
+        var toRemove = excludeKeys.Length > 0
+            ? desiredSettings.Keys.Where(s => excludeKeys.Any(s.StartsWith))
+            : Array.Empty<string>();
+
+        foreach (var key in toRemove)
+        {
+            desiredSettings.Remove(key);
+        }
+
+        return desiredSettings;
+    }
+
+    private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> Load(IConfigurationRepository repository, string filename)
     {
         try
         {
@@ -62,7 +85,7 @@ public class AppServiceConfigurationGenerator
         }
     }
 
-    private void Save(IConfigurationRepository repository, string filename, IEnumerable<IReadOnlyDictionary<string, object>> settings)
+    private static void Save(IConfigurationRepository repository, string filename, IEnumerable<IReadOnlyDictionary<string, object>> settings)
     {
         using var stream = new FileStream(filename, FileMode.Create, FileAccess.Write);
 
@@ -119,6 +142,12 @@ public class AppServiceConfigurationGenerator
         }
 
         throw new InvalidOperationException("File path template must contain '{0}' as environment placeholder when environments specified.");
-
     }
+
+    private ConfigurationRepository CreateRepositoryInstance() =>
+        _options.WrapInYaml switch
+        {
+            true => new YamlConfigurationRepository(_options),
+            false => new JsonConfigurationRepository(_options)
+        };
 }
