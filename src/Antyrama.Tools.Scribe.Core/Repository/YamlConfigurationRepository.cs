@@ -56,8 +56,11 @@ internal class YamlConfigurationRepository : ConfigurationRepository
             }
         };
 
+        var yaml = _serializer.Serialize(root);
+        yaml = yaml.Replace(Environment.NewLine, Eol);
+
         var writer = new StreamWriter(stream);
-        _serializer.Serialize(writer, root);
+        writer.Write(yaml);
         writer.Flush();
     }
 }

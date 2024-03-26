@@ -15,11 +15,11 @@ internal interface IConfigurationRepository
 
 internal abstract class ConfigurationRepository : IConfigurationRepository
 {
-    private readonly string _eol;
+    protected readonly string Eol;
 
     protected ConfigurationRepository(ToolInternalOptions options)
     {
-        _eol = ResolveEndOfLine(options);
+        Eol = ResolveEndOfLine(options);
     }
 
     public abstract IReadOnlyDictionary<string, object>[] Load(Stream stream);
@@ -30,11 +30,11 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
     {
         var serialized = settings.Select(setting => $"  {JsonConvert.SerializeObject(setting)}");
 
-        var separator = $",{_eol}";
+        var separator = $",{Eol}";
         var formatted = string.Join(separator, serialized)
             .BeautifyJson();
 
-        return $"[{_eol}{formatted}{_eol}]";
+        return $"[{Eol}{formatted}{Eol}]";
     }
 
     protected static IReadOnlyDictionary<string, object>[] Deserialize(string settings)
