@@ -25,7 +25,7 @@ internal class ConfigurationCollector
         return settings;
     }
 
-    private void Collect(IConfigurationSection section, ICollection<KeyValuePair<string, string>> settings,
+    private static void Collect(IConfigurationSection section, ICollection<KeyValuePair<string, string>> settings,
         string pathSeparator)
     {
         if (section == null || string.IsNullOrEmpty(section.Key))
