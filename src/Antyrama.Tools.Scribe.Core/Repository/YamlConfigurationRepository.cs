@@ -12,25 +12,25 @@ internal class YamlConfigurationRepository : ConfigurationRepository
     private readonly Serializer _serializer;
     private readonly Deserializer _deserializer;
 
-    public YamlConfigurationRepository(string variableName, ToolInternalOptions options)
+    public YamlConfigurationRepository(ToolInternalOptions options)
         : base(options)
     {
         _serializer = new SerializerBuilder()
             .WithAttributeOverride<Variables>(variables => variables.AppConfig,
-                new YamlMemberAttribute { Alias = variableName, ScalarStyle = ScalarStyle.Literal })
+                new YamlMemberAttribute { Alias = options.YamlVariableName, ScalarStyle = ScalarStyle.Literal })
             .Build();
         _deserializer = new DeserializerBuilder()
             .WithAttributeOverride<Variables>(variables => variables.AppConfig,
-                new YamlMemberAttribute { Alias = variableName, ScalarStyle = ScalarStyle.Literal })
+                new YamlMemberAttribute { Alias = options.YamlVariableName, ScalarStyle = ScalarStyle.Literal })
             .Build();
     }
 
     public override IReadOnlyDictionary<string, object>[] Load(Stream stream)
     {
+        var reader = new StreamReader(stream);
+
         try
         {
-            var reader = new StreamReader(stream);
-
             var variablesRoot = _deserializer.Deserialize<Root>(reader);
 
             if (variablesRoot?.Variables == null || string.IsNullOrWhiteSpace(variablesRoot.Variables.AppConfig))
@@ -40,7 +40,7 @@ internal class YamlConfigurationRepository : ConfigurationRepository
 
             return Deserialize(variablesRoot.Variables.AppConfig);
         }
-        catch (FileNotFoundException)
+        catch (YamlException)
         {
             return Array.Empty<IReadOnlyDictionary<string, object>>();
         }
@@ -57,7 +57,11 @@ internal class YamlConfigurationRepository : ConfigurationRepository
         };
 
         var yaml = _serializer.Serialize(root);
-        yaml = yaml.Replace(Environment.NewLine, Eol);
+
+        if (Environment.NewLine != Eol)
+        {
+            yaml = yaml.Replace(Environment.NewLine, Eol);
+        }
 
         var writer = new StreamWriter(stream);
         writer.Write(yaml);

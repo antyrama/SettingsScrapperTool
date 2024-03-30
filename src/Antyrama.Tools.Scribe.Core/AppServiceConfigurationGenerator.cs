@@ -21,6 +21,28 @@ public class AppServiceConfigurationGenerator
 
     public void Generate()
     {
+        var desiredSettings = CollectSettings();
+
+        var repository = CreateRepositoryInstance();
+
+        ProcessConfigurationFiles(repository, desiredSettings);
+    }
+
+    private void ProcessConfigurationFiles(ConfigurationRepository repository,
+        Dictionary<string, string> desiredSettings)
+    {
+        foreach (var filename in GetConfigurationFiles(_options))
+        {
+            var currentSettings = Load(repository, filename);
+
+            var newSettings = MatchSettings(desiredSettings, currentSettings);
+
+            Save(repository, filename, newSettings);
+        }
+    }
+
+    private Dictionary<string, string> CollectSettings()
+    {
         var configuration = (IConfiguration)_serviceProvider.GetService(typeof(IConfiguration));
 
         var includeKeys = new IncludeKeysGenerator(configuration)
@@ -34,18 +56,16 @@ public class AppServiceConfigurationGenerator
             .ExceptBy(_options.ExcludeKeys, setting => setting.Key)
             .ToDictionary(s => s.Key, s => s.Value);
 
-        var repository = _options.WrapInYaml
-            ? (ConfigurationRepository)new YamlConfigurationRepository(_options.YamlVariableName, _options)
-            : new JsonConfigurationRepository(_options);
+        var toRemove = _options.ExcludeKeys.Any()
+            ? desiredSettings.Keys.Where(s => !_options.ExcludeKeys.Any(s.StartsWith))
+            : Array.Empty<string>();
 
-        foreach (var filename in GetConfigurationFiles(_options))
+        foreach (var key in toRemove)
         {
-            var currentSettings = Load(repository, filename);
-
-            var newSettings = MatchSettings(desiredSettings, currentSettings);
-
-            Save(repository, filename, newSettings);
+            desiredSettings.Remove(key);
         }
+
+        return desiredSettings;
     }
 
     private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> Load(IConfigurationRepository repository, string filename)
@@ -120,4 +140,11 @@ public class AppServiceConfigurationGenerator
 
         throw new InvalidOperationException("File path template must contain '{0}' as environment placeholder when environments specified.");
     }
+
+    private ConfigurationRepository CreateRepositoryInstance() =>
+        _options.WrapInYaml switch
+        {
+            true => new YamlConfigurationRepository(_options),
+            false => new JsonConfigurationRepository(_options)
+        };
 }
