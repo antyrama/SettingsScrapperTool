@@ -7,7 +7,7 @@
 A smart CLI tool that automates the tedious task of configuring application services in the cloud.
 
 ## What it does?
-Once executed, tool will hook up to host of `Microsoft.NET.Sdk.Web` application (NET6&7 only), collect all application settings and update your configuration JSON or YAML file.
+Once executed, tool will hook up to host of `Microsoft.NET.Sdk.Web` application, collect all application settings and update your configuration JSON or YAML file.
 
 ## Getting started
 Tool can be installed using the `Nuget package manager` or the `dotnet` CLI.
