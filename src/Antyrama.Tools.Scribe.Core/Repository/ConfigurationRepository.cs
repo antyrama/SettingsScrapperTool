@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Antyrama.Tools.Scribe.Core.Extensions;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Antyrama.Tools.Scribe.Core.Repository;
 
@@ -28,7 +28,7 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
 
     protected string Serialize(IEnumerable<IReadOnlyDictionary<string, object>> settings)
     {
-        var serialized = settings.Select(setting => $"  {JsonConvert.SerializeObject(setting)}");
+        var serialized = settings.Select(setting => $"  {JsonSerializer.Serialize(setting)}");
 
         var separator = $",{Eol}";
         var formatted = string.Join(separator, serialized)
@@ -41,7 +41,7 @@ internal abstract class ConfigurationRepository : IConfigurationRepository
     {
         try
         {
-            var deserialized = JsonConvert.DeserializeObject<IReadOnlyDictionary<string, object>[]>(settings);
+            var deserialized = JsonSerializer.Deserialize<IReadOnlyDictionary<string, object>[]>(settings);
 
             return deserialized ?? Array.Empty<IReadOnlyDictionary<string, object>>();
         }
