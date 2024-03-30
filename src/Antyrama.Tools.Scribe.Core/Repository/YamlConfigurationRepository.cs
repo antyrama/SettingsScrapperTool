@@ -12,8 +12,7 @@ internal class YamlConfigurationRepository : ConfigurationRepository
     private readonly Serializer _serializer;
     private readonly Deserializer _deserializer;
 
-    public YamlConfigurationRepository(string variableName, ToolInternalOptions options)
-        : base(options)
+    public YamlConfigurationRepository(string variableName)
     {
         _serializer = new SerializerBuilder()
             .WithAttributeOverride<Variables>(variables => variables.AppConfig,
@@ -56,11 +55,8 @@ internal class YamlConfigurationRepository : ConfigurationRepository
             }
         };
 
-        var yaml = _serializer.Serialize(root);
-        yaml = yaml.Replace(Environment.NewLine, Eol);
-
         var writer = new StreamWriter(stream);
-        writer.Write(yaml);
+        _serializer.Serialize(writer, root);
         writer.Flush();
     }
 }

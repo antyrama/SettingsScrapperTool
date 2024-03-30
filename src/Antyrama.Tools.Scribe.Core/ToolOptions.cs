@@ -38,10 +38,6 @@ public class ToolOptions
     [Option('e', "environments", Required = false, Default = new string[0],
         HelpText = "A list of environment names. Separate configuration file will be created per each environment. Required when file name template contains placeholder.")]
     public IEnumerable<string> EnvironmentsList { get; set; }
-
-    [Option('l', "eol", Required = false,
-        HelpText = "End-of-line delimiter, possible values: Cr, CrLf or Lf, by default operating system end-of-line will be used.")]
-    public EndOfLine? Eol { get; set; }
 }
 
 [Verb("_generate", Hidden = true)]
@@ -79,15 +75,4 @@ public class ToolInternalOptions
     [Option('e', "environments", Required = false, Default = new string[0],
         HelpText = "A list of environment names. Separate configuration file will be created per each environment. Required when file name template contains placeholder.")]
     public IEnumerable<string> Environments { get; set; }
-
-    [Option('l', "eol", Required = false,
-        HelpText = "End-of-line delimiter, possible values: Cr, CrLf or Lf, by default operating system end-of-line will be used.")]
-    public EndOfLine? Eol { get; set; }
-}
-
-public enum EndOfLine
-{
-    Cr,
-    CrLf,
-    Lf
 }

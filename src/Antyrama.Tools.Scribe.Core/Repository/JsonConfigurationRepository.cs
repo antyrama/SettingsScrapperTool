@@ -6,10 +6,6 @@ namespace Antyrama.Tools.Scribe.Core.Repository;
 
 internal class JsonConfigurationRepository : ConfigurationRepository
 {
-    public JsonConfigurationRepository(ToolInternalOptions options) : base(options)
-    {
-    }
-
     public override IReadOnlyDictionary<string, object>[] Load(Stream stream)
     {
         try

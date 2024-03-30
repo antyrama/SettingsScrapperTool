@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "antyrama.tools.scribe.cli": {
-      "version": "0.0.5",
+      "version": "0.0.3-rc",
       "commands": [
         "app-settings-to-file"
       ]
