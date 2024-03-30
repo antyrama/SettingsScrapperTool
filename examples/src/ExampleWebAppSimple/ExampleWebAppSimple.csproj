@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antyrama.Tools.Scribe.Core" Version="0.0.3-rc" />
+    <PackageReference Include="Antyrama.Tools.Scribe.Core" Version="0.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
