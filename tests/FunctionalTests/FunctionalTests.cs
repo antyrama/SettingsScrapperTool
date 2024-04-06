@@ -325,6 +325,46 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
         File.Delete(options.FilePathTemplate);
     }
 
+    [Fact]
+    public async Task ShouldExcludeExactSetting()
+    {
+        // assign
+        var serviceProvider = _factory.Server.Services;
+
+        var options = CreateOptions(false, $"..\\{FileTemplate}", null, new[] { "AllowedHosts" });
+
+        var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
+
+        // act
+        sut.Generate();
+
+        // assert
+        var json = await File.ReadAllTextAsync(options.FilePathTemplate);
+        await VerifyJson(json);
+
+        File.Delete(options.FilePathTemplate);
+    }
+
+    [Fact]
+    public async Task ShouldExcludeWithAllNestedSettings()
+    {
+        // assign
+        var serviceProvider = _factory.Server.Services;
+
+        var options = CreateOptions(false, $"..\\{FileTemplate}", null, new[] { "Logging:LogLevel" });
+
+        var sut = new AppServiceConfigurationGenerator(serviceProvider, options);
+
+        // act
+        sut.Generate();
+
+        // assert
+        var json = await File.ReadAllTextAsync(options.FilePathTemplate);
+        await VerifyJson(json);
+
+        File.Delete(options.FilePathTemplate);
+    }
+
     private static JArray? Deserialize(ToolInternalOptions options, TextReader reader, bool wrapInYaml)
     {
         string? content;
@@ -350,7 +390,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     private static ToolInternalOptions CreateOptions(bool wrapInYaml, string fileTemplate, EndOfLine? eof,
-        [CallerMemberName] string prefix = "")
+        string[]? exclude = null, [CallerMemberName] string prefix = "")
     {
         var options = new ToolInternalOptions
         {
@@ -359,7 +399,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
             Assembly = "assembly",
             FilePathTemplate = Path.Combine(Environment.CurrentDirectory, fileTemplate.Replace("[prefix]", prefix)),
             Environments = Array.Empty<string>(),
-            ExcludeKeys = Array.Empty<string>(),
+            ExcludeKeys = exclude ?? Array.Empty<string>(),
             IncludeKeys = Array.Empty<string>(),
             YamlVariableName = "some_name",
             WrapInYaml = wrapInYaml,

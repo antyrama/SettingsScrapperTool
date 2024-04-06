@@ -1,0 +1,12 @@
+﻿[
+  {
+    name: AllowedHosts,
+    value: *,
+    slotSetting: false
+  },
+  {
+    name: Logging__ApplicationInsights__EnableAdaptiveSampling,
+    value: False,
+    slotSetting: false
+  }
+]

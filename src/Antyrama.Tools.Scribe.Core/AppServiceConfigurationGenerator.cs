@@ -43,6 +43,10 @@ public class AppServiceConfigurationGenerator
 
     private Dictionary<string, string> CollectSettings()
     {
+        var excludeKeys = _options.ExcludeKeys
+            .Select(x => x.Replace(":", _options.PathSeparator))
+            .ToArray();
+
         var configuration = (IConfiguration)_serviceProvider.GetService(typeof(IConfiguration));
 
         var includeKeys = new IncludeKeysGenerator(configuration)
@@ -53,11 +57,10 @@ public class AppServiceConfigurationGenerator
 
         var desiredSettings = allSettings
             .IntersectBy(includeKeys, setting => setting.Key)
-            .ExceptBy(_options.ExcludeKeys, setting => setting.Key)
             .ToDictionary(s => s.Key, s => s.Value);
 
-        var toRemove = _options.ExcludeKeys.Any()
-            ? desiredSettings.Keys.Where(s => !_options.ExcludeKeys.Any(s.StartsWith))
+        var toRemove = excludeKeys.Length > 0
+            ? desiredSettings.Keys.Where(s => excludeKeys.Any(s.StartsWith))
             : Array.Empty<string>();
 
         foreach (var key in toRemove)
