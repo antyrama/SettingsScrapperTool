@@ -73,7 +73,9 @@ Tool is customisable, take a look at list of all arguments that can be passed. E
 | -y | --to-yaml | :heavy_check_mark: | Indicates whether configuration wrapped in YAML Azure DevOps variables file | `false` |
 | -f | --file-path-template | :heavy_check_mark: | File name template for output. Template may contain a placeholder for environment name. Example: `configuration.{0}.json` | `./configuration.json` |
 | -e | --environments | :heavy_check_mark: | A list of environment names. Separate configuration file will be created per each environment. Required when file name template contains placeholder | |
-| -l | -eol | :heavy_check_mark: | Customize end-of-line characters, possible values: `Cr`, `CrLf` or `Lf`, when skipped, operating system default end-of-line characters will be used | |
+| -l | --eol | :heavy_check_mark: | Customize end-of-line characters, possible values: `Cr`, `CrLf` or `Lf`, when skipped, operating system default end-of-line characters will be used | |
+| -d | --enable-desired-settings | :heavy_check_mark: | Enables mechanism which allows user to decide which setting goes to configuration files | false |
+| -q | --desired-settings-filename | :heavy_check_mark: | Filtering filename | `./configuration.json` |
 
 ### Configuration providers
 If you'd like to include all the settings collected by different configuration provider, add them all by `--providers` option. More information about [configuration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers).
@@ -110,4 +112,13 @@ Tool is able to create one configuration file per environment. Set option `--env
 configuration.dev.yaml 
 configuration.prod.yaml
 configuration.test.yaml
+```
+
+### Filtering final list of settings
+Using `-d` and/or `-q` (desired settings) allows to filter out settings from target configuration files, when it's enabled, on build, it will try to read `./configuration.md` file and according to it contents remove all setting lines prefixed by `#`.
+
+``` md
+AllowedHosts
+#Logging__LogLevel__Default
+Logging__LogLevel__Microsoft.AspNetCore
 ```
