@@ -28,7 +28,7 @@ public class ToolOptions
     [Option('v', "yaml-variable-name", Required = false, Default = "app_config", HelpText = "YAML variable name")]
     public string YamlVariableName { get; set; }
 
-    [Option('y', "to-yaml", Required = false, Default = false, HelpText = "Indicates whether configuration wrapped in YAML Azure DevOps variables file")]
+    [Option('y', "to-yaml", Required = false, Default = false, HelpText = "Indicates whether configuration wrapped in YAML Azure DevOps variables file.")]
     public bool WrapInYaml { get; set; }
 
     [Option('f', "file-path-template", Default = "./configuration.json", Required = false,
@@ -42,6 +42,13 @@ public class ToolOptions
     [Option('l', "eol", Required = false,
         HelpText = "End-of-line delimiter, possible values: Cr, CrLf or Lf, by default operating system end-of-line will be used.")]
     public EndOfLine? Eol { get; set; }
+
+    [Option('d', "enable-desired-settings", Required = false, Default = false, HelpText = "Enables mechanism to filter which setting should appear in configuration files.")]
+    public bool EnableDesiredSettings { get; set; }
+
+    [Option('q', "desired-settings-filename", Default = "./configuration.md", Required = false,
+        HelpText = "Filename for settings filter file.")]
+    public string DesiredSettingsFilename { get; set; }
 }
 
 [Verb("_generate", Hidden = true)]
@@ -83,6 +90,13 @@ public class ToolInternalOptions
     [Option('l', "eol", Required = false,
         HelpText = "End-of-line delimiter, possible values: Cr, CrLf or Lf, by default operating system end-of-line will be used.")]
     public EndOfLine? Eol { get; set; }
+
+    [Option('d', "enable-desired-settings", Required = false, Default = false, HelpText = "Enables mechanism to filter which setting should appear in configuration files.")]
+    public bool EnableDesiredSettings { get; set; }
+
+    [Option('q', "desired-settings-filename", Default = "./configuration.md", Required = false,
+        HelpText = "Filename for filter file for settings.")]
+    public string DesiredSettingsFilename { get; set; }
 }
 
 public enum EndOfLine

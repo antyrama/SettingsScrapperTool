@@ -23,15 +23,40 @@ public class AppServiceConfigurationGenerator
     {
         var desiredSettings = CollectSettings();
 
+        FilterSettings(desiredSettings);
+
         var repository = CreateRepositoryInstance();
 
         ProcessConfigurationFiles(repository, desiredSettings);
     }
 
+    private void FilterSettings(Dictionary<string, string> desiredSettings)
+    {
+        if (!_options.EnableDesiredSettings)
+        {
+            return;
+        }
+
+        var handlingList = desiredSettings.ToDictionary(k => k.Key, _ => true);
+
+        var handlingListRepository = new HandlingListRepository(_options);
+
+        handlingListRepository.PopulateState(handlingList);
+
+        var removedKeys = handlingList.Where(k => !k.Value).Select(k => k.Key).ToList();
+
+        foreach (var removedKey in removedKeys)
+        {
+            desiredSettings.Remove(removedKey);
+        }
+
+        handlingListRepository.SaveState(handlingList);
+    }
+
     private void ProcessConfigurationFiles(ConfigurationRepository repository,
         Dictionary<string, string> desiredSettings)
     {
-        foreach (var filename in GetConfigurationFiles(_options))
+        foreach (var filename in GetConfigurationFiles())
         {
             var currentSettings = Load(repository, filename);
 
@@ -99,8 +124,8 @@ public class AppServiceConfigurationGenerator
 
         foreach (var setting in desiredSettings)
         {
-            newSettings.Add(currentSettings.ContainsKey(setting.Key)
-                ? currentSettings[setting.Key]
+            newSettings.Add(currentSettings.TryGetValue(setting.Key, out var currentSetting)
+                ? currentSetting
                 : CreateNewSetting(setting));
         }
 
@@ -117,21 +142,21 @@ public class AppServiceConfigurationGenerator
             };
     }
 
-    private IEnumerable<string> GetConfigurationFiles(ToolInternalOptions options)
+    private IEnumerable<string> GetConfigurationFiles()
     {
-        var filepath = Path.Combine(Directory.GetCurrentDirectory(), options.FilePathTemplate);
+        var filepath = Path.Combine(Directory.GetCurrentDirectory(), _options.FilePathTemplate);
         Console.WriteLine("Resolving configuration file name for: " + _options.FilePathTemplate);
 
-        if (!options.Environments.Any())
+        if (!_options.Environments.Any())
         {
             Console.WriteLine("File path is: " + filepath);
 
             return new[] { filepath };
         }
 
-        if (options.FilePathTemplate.Contains("{0}"))
+        if (_options.FilePathTemplate.Contains("{0}"))
         {
-            return options.Environments.Select(environment =>
+            return _options.Environments.Select(environment =>
             {
                 var filename = string.Format(_options.FilePathTemplate, environment);
 

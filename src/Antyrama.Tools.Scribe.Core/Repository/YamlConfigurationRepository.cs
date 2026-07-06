@@ -7,7 +7,7 @@ using YamlDotNet.Serialization;
 
 namespace Antyrama.Tools.Scribe.Core.Repository;
 
-internal class YamlConfigurationRepository : ConfigurationRepository
+internal sealed class YamlConfigurationRepository : ConfigurationRepository
 {
     private readonly Serializer _serializer;
     private readonly Deserializer _deserializer;
