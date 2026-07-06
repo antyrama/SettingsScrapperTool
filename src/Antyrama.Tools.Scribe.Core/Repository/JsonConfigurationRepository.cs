@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Antyrama.Tools.Scribe.Core.Repository;
 
-internal class JsonConfigurationRepository : ConfigurationRepository
+internal sealed class JsonConfigurationRepository : ConfigurationRepository
 {
     public JsonConfigurationRepository(ToolInternalOptions options) : base(options)
     {
