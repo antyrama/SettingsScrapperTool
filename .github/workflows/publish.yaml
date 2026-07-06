@@ -4,6 +4,10 @@ on:
   push:
     tags: [ "*" ]
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
     VERSION: ${{ github.ref_name }}
     NUGET_SECRET: ${{ secrets.NUGET_PUBLISH_SECRET }}
